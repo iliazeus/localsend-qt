@@ -1,0 +1,12 @@
+[project]
+name = "localsend-qt"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "names-generator>=0.2.0",
+    "pydantic>=2.12.5",
+    "pyside6>=6.10.2",
+]
+
+[tool.pyside6-project]
+files = ["main.py"]
