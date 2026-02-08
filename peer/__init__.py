@@ -88,9 +88,11 @@ class Peer(QObject):
         self._register_peer(peer)
 
     def _register_peer(self, peer: RemotePeer):
-        if (
-            peer.info.fingerprint not in self._remote_peers
-            and peer.info.fingerprint != self._info.fingerprint
-        ):
+        if peer.info.fingerprint == self._info.fingerprint:
+            return
+
+        if peer.info.fingerprint in self._remote_peers:
+            self._remote_peers[peer.info.fingerprint].staleness = 0
+        else:
             self._remote_peers[peer.info.fingerprint] = peer
             self.remote_peers_changed.emit()
