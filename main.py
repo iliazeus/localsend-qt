@@ -1,70 +1,34 @@
+#!/usr/bin/env python3
+
+import os
 import sys
+import signal
 
-from PySide6.QtCore import Slot
-from PySide6.QtNetwork import QHostAddress
+from PySide6.QtGui import QGuiApplication
+from PySide6.QtCore import QUrl
+from PySide6.QtQml import QQmlApplicationEngine
 
-from PySide6.QtWidgets import (
-    QApplication,
-    QLabel,
-    QListWidget,
-    QListWidgetItem,
-    QVBoxLayout,
-    QWidget,
-)
-
-from names_generator import generate_name
-from pydantic.dataclasses import dataclass
+from localsend import Peer
 
 
-from peer import Peer, RemotePeer
+def main():
+    app = QGuiApplication(sys.argv)
+    engine = QQmlApplicationEngine()
 
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-class MainWindow(QWidget):
-    _peer: Peer
+    if not os.environ.get("QT_QUICK_CONTROLS_STYLE"):
+        os.environ["QT_QUICK_CONTROLS_STYLE"] = "org.kde.desktop"
 
-    _remote_peer_list: QListWidget
+    base_path = os.path.abspath(os.path.dirname(__file__))
+    url = QUrl(f"file://{base_path}/main.qml")
+    engine.load(url)
 
-    def __init__(self):
-        super().__init__()
+    if len(engine.rootObjects()) == 0:
+        quit()
 
-        self._peer = Peer(self)
-        self._peer.remote_peers_changed.connect(self._on_remote_peers_changed)
-
-        peer_info = self._peer.get_info()
-
-        self.resize(400, 500)
-
-        self.setWindowTitle(f"QLocalSend: {peer_info.alias}")
-
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-        layout.addWidget(QLabel(f"<center><big>{peer_info.alias}</big></center>"))
-        layout.addWidget(QLabel(f"Peers:"))
-
-        self._remote_peer_list = QListWidget()
-        layout.addWidget(self._remote_peer_list)
-
-        self._remote_peer_list_items = {}
-
-    @Slot()
-    def _on_remote_peers_changed(self):
-        peers = self._peer.get_remote_peers()
-        for fingerprint in self._remote_peer_list_items:
-            if fingerprint not in peers:
-                item = self._remote_peer_list_items[fingerprint]
-                self._remote_peer_list.takeItem(self._remote_peer_list.row(item))
-        for fingerprint in peers:
-            if fingerprint not in self._remote_peer_list_items:
-                peer = peers[fingerprint]
-                item = QListWidgetItem()
-                item.setText(f"{peer.info.alias} ({peer.address})")
-                self._remote_peer_list.addItem(item)
-                self._remote_peer_list_items[fingerprint] = item
+    app.exec()
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+    main()
