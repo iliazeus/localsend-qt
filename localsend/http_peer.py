@@ -81,7 +81,7 @@ class _HttpClient(QObject):
 class HttpPeer(QObject):
     PORT = 53317
 
-    _instance: HttpPeer | None = None
+    _instance: 'HttpPeer | None' = None
 
     _tcpServer: QTcpServer
     _httpServer: QHttpServer

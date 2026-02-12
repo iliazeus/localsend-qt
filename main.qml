@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as QQ
-// import QtQuick.Controls
-import org.kde.plasma.components
+import QtQuick.Controls
+// import org.kde.plasma.components
 import QtQuick.Window
 
 import lol.iliazeus.localsend as LS
@@ -14,25 +14,33 @@ QQ.ApplicationWindow {
 
     title: "localsend-qt: " + lsPeer.info.alias
     visible: true
+    minimumWidth: 400
+    minimumHeight: 500
 
-    ColumnLayout {
+    Page {
         anchors.fill: parent
+        padding: 6
 
-        Label {
+        header: Label {
             text: lsPeer.info.alias
+
             font.pixelSize: 24
-            Layout.alignment: Qt.AlignHCenter
+            anchors.left: parent.left
+            anchors.right: parent.right
+            horizontalAlignment: Text.AlignHCenter
+            // Layout.alignment: Qt.AlignHCenter
         }
 
-        Label {
-            text: "Peers:"
-        }
+        // Label {
+        //     text: "Peers:"
+        // }
 
-        Frame {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+        GroupBox {
+            // Layout.fillWidth: true
+            // Layout.fillHeight: true
+            anchors.fill: parent
 
-            // title: "Peers"
+            title: "Peers"
 
             ListView {
                 anchors.fill: parent
